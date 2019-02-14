@@ -11,6 +11,15 @@ class Player:
         self.position = starting_position
 
 
+def get_difference(p1, p2):
+    return (p1[0] - p2[0], p1[1] - p2[1])
+
+def get_sum(p1, p2):
+    return (p1[0] + p2[0], p1[1] + p2[1])
+
+def mult(p, n):
+    return (p[0]*n, p[1]*n)
+
 def is_up(difference):
     return difference == (-1, 0)
 
@@ -61,7 +70,7 @@ class Board:
         return self.vertical_fences[x-1][y] or self.vertical_fences[x][y]
 
     def is_blocked_by_fence(self, position_from, position_to):
-        difference = position_to - position_from
+        difference = get_difference(position_to, position_from)
         if is_up(difference):
             return self.fence_above(position_from)
         elif is_down(difference):
@@ -110,21 +119,21 @@ class Game:
                            if is_inside_board(move) and not is_not_allowed(self.current_player.position)]
         if self.other_player.position in move_candidates:
             move_candidates.remove(self.other_player.position)
-            difference = self.other_player.position - self.current_player.position
-            new_move_candidate = self.current_player.position + 2*(self.other_player.position - self.current_player.position)  # ok, if it inside the board and there is no fence
+            difference = get_difference(self.other_player.position, self.current_player.position)
+            new_move_candidate = get_sum(self.current_player.position, mult(get_difference(self.other_player.position, self.current_player.position), 2))  # ok, if it inside the board and there is no fence
             if not is_inside_board(new_move_candidate) or self.board.is_blocked_by_fence(self.other_player.position, new_move_candidate):
                 x_o, y_o = self.other_player.position
                 new_move_candidates = []
                 if is_horizontal(difference):
-                    other_up = (x_o, y_o-1)
-                    other_down = (x_o, y_o+1)
+                    other_up = (x_o-1, y_o)
+                    other_down = (x_o+1, y_o)
                     if is_inside_board(other_up) and not self.board.fence_above(self.other_player.position):
                         new_move_candidates.append(other_up)
                     if is_inside_board(other_down) and not self.board.fence_below(self.other_player.position):
                         new_move_candidates.append(other_down)
                 else:
-                    other_left = (x_o-1, y_o)
-                    other_right = (x_o+1, y_o)
+                    other_left = (x_o, y_o-1)
+                    other_right = (x_o, y_o+1)
                     if is_inside_board(other_left) and not self.board.fence_on_left(self.other_player.position):
                         new_move_candidates.append(other_left)
                     if is_inside_board(other_right) and not self.board.fence_on_right(self.other_player.position):
@@ -148,6 +157,10 @@ if __name__ == '__main__':
     game.board.vertical_fences[0][4] = 1
     print(game.get_available_pawn_moves())
     game.board.horizontal_fences[0][3] = 1
+    print(game.get_available_pawn_moves())
+    game.current_player = Player((1,2))
+    game.other_player = Player((0,2))
+    game.board.vertical_fences[0][1] = 1
     print(game.get_available_pawn_moves())
     p2.fences_left = 7
     print(p1.fences_left)
