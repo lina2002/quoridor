@@ -5,9 +5,9 @@ N = 9
 
 
 class Player:
-    fences_left = 10
 
     def __init__(self, starting_position):
+        self.fences_left = 10
         self.position = starting_position
 
 
@@ -34,8 +34,9 @@ def is_right(difference):
 
 
 class Board:
-    horizontal_fences = np.zeros((N-1, N-1))  # (i, j) fence is between i-th and i+1-th row, and is in j-th and j+1-th column
-    vertical_fences = np.zeros((N-1, N-1))  # (i, j) fence is between j-th and j+1-th column, and is in i-th and i+1-th row
+    def __init__(self):
+        self.horizontal_fences = np.zeros((N-1, N-1))  # (i, j) fence is between i-th and i+1-th row, and is in j-th and j+1-th column
+        self.vertical_fences = np.zeros((N-1, N-1))  # (i, j) fence is between j-th and j+1-th column, and is in i-th and i+1-th row
 
     def fence_above(self, position):
         x, y = position
@@ -91,11 +92,13 @@ def is_inside_board(position):
 
 
 class Game:
-    first_player = Player((0, N//2))
-    second_player = Player((N-1, N//2))
-    current_player = first_player
-    other_player = second_player
-    board = Board()
+
+    def __init__(self):
+        self.first_player = Player((0, N//2))
+        self.second_player = Player((N-1, N//2))
+        self.current_player = self.first_player
+        self.other_player = self.second_player
+        self.board = Board()
 
     def get_winning_player(self):
         if self.first_player.position[0] == N-1:
@@ -145,23 +148,3 @@ class Game:
 
     def get_available_fence_positions(self):
         pass
-
-
-if __name__ == '__main__':
-    p1 = Player((3, 4))
-    p2 = Player((6, 1))
-    game = Game()
-    print(game.get_available_pawn_moves())
-    game.board.vertical_fences[0][3] = 1
-    print(game.get_available_pawn_moves())
-    game.board.vertical_fences[0][4] = 1
-    print(game.get_available_pawn_moves())
-    game.board.horizontal_fences[0][3] = 1
-    print(game.get_available_pawn_moves())
-    game.current_player = Player((1,2))
-    game.other_player = Player((0,2))
-    game.board.vertical_fences[0][1] = 1
-    print(game.get_available_pawn_moves())
-    p2.fences_left = 7
-    print(p1.fences_left)
-    print(p2.fences_left)
